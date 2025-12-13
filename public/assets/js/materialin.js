@@ -1,0 +1,320 @@
+$(function () {
+    
+    // Inventory add start
+	
+       $('#addInventory').validate({
+        rules: {
+            'invoice_number': {
+                required: true
+            },
+            'supplier_id': {
+                required: true
+            },
+            'invoice_date': {
+                required: true
+            },
+            'receive_date': {
+                required: true
+            },
+			'transport_document_number': {
+                required: true
+            }
+        },
+        messages: {
+            invoice_number: 'Invoice number required',
+            supplier_id: 'Supplier is required',
+            invoice_date: 'Invoice date required',
+			receive_date: 'Receive date required',
+			transport_document_number: 'Transport document number required'
+        },
+        highlight: function (input) {
+            $(input).parents('.form-line').addClass('error');
+        },
+        unhighlight: function (input) {
+            $(input).parents('.form-line').removeClass('error');
+        },
+        errorPlacement: function (error, element) {
+            $(element).parents('.input-group').append(error);
+            $(element).parents('.form-group').append(error);
+        },
+        submitHandler: function(form,e) {
+            addInventory();
+        }
+       });
+	
+    // Inventory add end
+
+   
+
+    // Invoice search start
+    $('#searchinvoice').validate({
+        
+        submitHandler: function(form,e) {
+            searchData('materialin', 'searchinvoice', 'invoiceListTableDiv', 'materialoutListTable'); //module, formid, divToBeReplaced, tableId
+        }
+    });
+    // Invoice search end
+
+    
+});
+function test()
+{
+	$("#addInventory").submit();
+}
+function update()
+{
+	$("#editinventory").submit();
+}
+function showAdd(){
+    $('.process-loader-wrapper').show();
+	$('#pod_block_edit').html('');
+   // $('#edit-form').html('');
+    $.ajax({
+        type: 'GET',
+        url: site_url+'/inventoryfile',
+        success: function(response){
+            $('.process-loader-wrapper').hide();
+            $('#upload-file').html(response.file_upload);
+            $('#pod_block').html(response.pod_details);
+        }
+    });
+
+}
+function addInventory(){
+    $('.process-loader-wrapper').show();
+    event.preventDefault();
+    let formData = new FormData($('#addInventory')[0]);
+	$.ajaxSetup({
+	  headers: {
+		'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	  }
+	});
+    $.ajax({
+        type: 'POST',
+        url: site_url+'/materialin',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response){
+            if(!response.errorStatus){
+                $("#success-msg").css("display", "block");
+                $('#success-msg').text(response.successmessage);
+              //  reloadList('inventory', 'inventoryListTableDiv', 'inventoryListTable');
+            }
+            else{
+                $("#error-msg").css("display", "block");
+                $('#error-msg').text('Please fill form properly');
+            }
+            setTimeout(function(){
+                $("#success-msg").css("display", "none");
+                $("#error-msg").css("display", "none");
+				window.location.href = site_url+'/materialin';
+              //  editBulding(response.data.id);
+            }, 3000);
+            $('.process-loader-wrapper').hide();
+        },
+        error: function(response){
+            console.log(response);
+        }
+    });
+}
+
+
+
+function editInventory(id){
+	$('#upload-file').html('');
+	$('#pod_block').html('');
+    $.ajax({
+        type: 'GET',
+        url: site_url+'/inventory/'+id+'/edit',
+        success: function(response){
+            let inventoryinfo = response.inventoryinfo;
+			
+            $('#inv_po_edit').val(inventoryinfo.inv_po);
+            $('#inv_container_edit').val(inventoryinfo.inv_container);
+            $('#inv_tot_pieces_edit').val(inventoryinfo.inv_tot_pieces);
+            $('#inv_weight_edit').val(inventoryinfo.inv_weight);
+            $('#inv_date_of_arr_edit').val(inventoryinfo.inv_date_of_arr);
+			$('#inv_sku_edit').val(inventoryinfo.inv_sku);
+			$('#inv_pallet_edit').val(inventoryinfo.inv_pallet);
+            $('#inv_cust_name_edit').val(inventoryinfo.inv_cust_name);
+            $('#inv_description_edit').val(inventoryinfo.inv_description);
+            $('#inv_tot_piece_left_edit').val(inventoryinfo.inv_tot_piece_left);
+            $('#inv_id').val(inventoryinfo.inv_id);
+
+            // for print div data set start
+            $('#inventory-po').html(inventoryinfo.inv_po);
+			$('#inventory-doa').html(inventoryinfo.inv_date_of_arr);
+			$('#inventory-container').html(inventoryinfo.inv_container);
+			$('#inventory-cname').html(inventoryinfo.inv_cust_name);
+			$('#inventory-sku').html(inventoryinfo.inv_sku);
+            $('#inventory-pallet').html(inventoryinfo.inv_pallet);
+            $('#inventory-tpr').html(inventoryinfo.inv_tot_pieces);
+            $('#inventory-tpl').html(inventoryinfo.inv_tot_piece_left);
+            $('#inventory-weight').html(inventoryinfo.inv_weight);
+            $('#inventory-des').html(inventoryinfo.inv_description);
+			$('#update-upload-file').html(response.file_upload);
+			$('#pod_block_edit').html(response.pod_details);
+            // for print div data set end
+            calculateLeft();
+            var boxWidth = $(".box-inner").width();
+            
+            $('#editpanel').show();
+            $('#addpanel').hide();
+            $(".box").addClass('open');
+            $("#content-area").removeClass('col-lg-12');
+            $("#content-area").addClass('col-lg-6');
+        }
+    });
+}
+
+function resetInvoiceSearch(){
+    $('.process-loader-wrapper').show();
+    $('#invoice_number_search').val('');
+    $('#supplier_id_search').val('');
+    $('#formdate').val('');
+    $('#todate').val('');
+    reloadList('materialin', 'invoiceListTableDiv', 'invoiceListTable');
+}
+function delinvfile(imgid)
+{
+    $('.process-loader-wrapper').show();
+    event.preventDefault();
+	
+		$.ajax({
+			type: 'GET',
+			url: site_url+'/delinvfile/'+imgid,
+			success: function(response){
+				if(!response.errorStatus){
+					$('.process-loader-wrapper').hide();
+					$('#inventory_image_'+imgid).remove();
+					
+				}
+				
+			}
+		});
+	
+}
+
+function appendDiv(id)
+{
+	$('#delconfirmimg_'+id).addClass('del-img');
+}
+function deleteDiv(id)
+{
+	$('#delconfirmimg_'+id).removeClass('del-img');
+}
+function addblock()
+{
+	
+	var cur_block=parseInt($('#block_count').val());
+	var new_block_id=cur_block;
+	
+	/*$('#table_block').append('<tr id="tr_block_'+new_block_id+'"><td><input type="text" name="pod_dep_date_'+new_block_id+'" class="payment_info_date"></td><td><input type="text" name="product_sku_'+new_block_id+'" value=""/></td><td><input type="text" name="batch_no_'+new_block_id+'" id="batch_no_'+new_block_id+'" value="" onchange="calculateLeft()" class="pod_pieces"  /></td><td><input type="text" name="description_'+new_block_id+'"  value="" /></td><td><input type="text" name="qty_'+new_block_id+'"  value="" /></td><td><input type="text" name="rate_'+new_block_id+'" value="" /></td><td><input type="text" name="amount_'+new_block_id+'" value="" /></td><td><input type="text" value="" name="manufacturing_date_'+new_block_id+'" id="payment_details_id_'+new_block_id+'" /></td><td><input type="text" name="expiry_date_'+new_block_id+'" ></td><td><input type="hidden" name="pod_id_'+new_block_id+'" id="pod_id_'+new_block_id+'" value=""><a href="javascript:;" onclick="deleteConfirm(\''+new_block_id+'\');"><img src="public/assets/images/delete.svg" style="width: 20px;"></a><div id="delconfirm_'+new_block_id+'" class="slidediv"><div class="slidediv-inner"><span class="label">Would you like to delete?<a href="javascript:;" onclick="delpod(\''+new_block_id+'\');">Yes</a> | <a href="javascript:;" onclick="closedeldiv(\''+new_block_id+'\')">No</a></span></div></div></td></tr>');*/
+	$('#table_block').append('<tr id="tr_block_'+new_block_id+'"><td><input type="hidden" name="pod_id_'+new_block_id+'" id="pod_id_'+new_block_id+'" value=""><select name="product_id_'+new_block_id+'" id="product_id_'+new_block_id+'" class="product_name" onchange="getSku('+new_block_id+')"><option value="">Select</option></select></td><td><input type="text" name="product_sku_'+new_block_id+'" id="product_sku_'+new_block_id+'" value="" readonly/></td><td><input type="text" name="batch_no_'+new_block_id+'" id="batch_no_'+new_block_id+'" value="" onchange="calculateLeft()" class="pod_pieces"  /></td><td><input type="text" name="description_'+new_block_id+'"  value="" /></td><td><input type="number" onkeypress="return event.charCode >= 48" min="1"  name="qty_'+new_block_id+'"  value="" onchange="calculateAmt('+new_block_id+')" id="qty_'+new_block_id+'" /></td><td><input type="text" name="rate_'+new_block_id+'" value="" id="rate_'+new_block_id+'" onchange="calculateAmt('+new_block_id+')" /></td><td><input type="text" name="amount_'+new_block_id+'" value="" id="amount_'+new_block_id+'" class="amount" readonly /></td><td><input type="text" value="" name="manufacturing_date_'+new_block_id+'" id="payment_details_id_'+new_block_id+'" class="payment_info_date"/></td><td><input type="text" name="expiry_date_'+new_block_id+'" class="payment_info_date"></td></tr>');
+	
+	$('#block_count').val(new_block_id+1);
+	$('.payment_info_date').datetimepicker({
+	    useCurrent: false,
+		format:'YYYY-MM-DD'
+	});
+	if($("#supplier_id").val()!='')
+	{
+		var sid = $("#supplier_id").val();
+		if(sid){
+			$.ajax ({
+				type: 'GET',
+				url: site_url+'/materialin/getproduct/'+sid,
+				success : function(htmlresponse) {
+					$('#product_id_'+new_block_id).html(htmlresponse);
+					console.log(htmlresponse);
+				}
+			});
+		}
+	}
+}
+function delpod(blockid)
+{
+	var details_id=$('#pod_id_'+blockid).val();
+	var del_val=$('#paid_amount_'+blockid).val();
+	$('.process-loader-wrapper').show();
+    event.preventDefault();
+	if(details_id!=''){
+		$.ajax({
+			type: 'GET',
+			url: site_url+'/delpod/'+details_id,
+			success: function(response){
+				if(!response.errorStatus){
+					$('.process-loader-wrapper').hide();
+					$('#tr_block_'+blockid).remove();
+					var cur_block=parseInt($('#block_count').val());
+					$('#block_count').val(cur_block-1);
+					calculateDue();
+				}
+				
+			}
+		});
+	} else {
+		$('.process-loader-wrapper').hide();
+		$('#tr_block_'+blockid).remove();
+		var cur_block=parseInt($('#block_count').val());
+		$('#block_count').val(cur_block-1);
+		calculateDue();
+	}
+	
+}
+function  getSku(id)
+{
+	$('#product_sku_'+id).val($("#product_id_"+id+" option:selected" ).attr('prodsku'));
+}
+function calculateAmt(id)
+{
+	var pamt = $('#rate_'+id).val();
+	var qty = $('#qty_'+id).val();
+	if(pamt!='' && qty!='')
+	{
+		$('#amount_'+id).val((pamt*qty).toFixed(2));
+	} else {
+		$('#amount_'+id).val('');
+	}
+	calculateTotal();
+}
+function calculateTotal()
+{
+	
+	var pamt = document.getElementsByClassName("amount");
+	var total_amt = 0.00;
+	for(var i=0; i<pamt.length; i++)
+	{
+		if($("#amount_"+i).val()!='')
+		{
+		    var amt =  $("#amount_"+i).val();
+			
+			total_amt = parseFloat(total_amt)+parseFloat(amt);
+			
+		}
+	}
+	$('#total_amount').val(total_amt.toFixed(2));
+	
+}
+function calculateLeft()
+{
+    var pamt = document.getElementsByClassName("pod_pieces");
+	var total_pieces = 0.00;
+	for(var i=0; i<pamt.length; i++)
+	{
+		if($("#pod_pieces_ship_"+i).val()!='')
+		{
+		    var amt =  $("#pod_pieces_ship_"+i).val();
+			
+			total_pieces = parseFloat(total_pieces)+parseFloat(amt);
+			
+		}
+	}
+	
+	var total_received = $("#inv_tot_pieces_edit").val();
+	var left_pieces = parseFloat(total_received) - parseFloat(total_pieces);
+	
+	
+	$('#inv_tot_piece_left_edit').val(left_pieces);
+}

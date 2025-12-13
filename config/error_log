@@ -1,0 +1,12 @@
+[09-Jun-2024 15:30:14 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/config/database.php on line 18
+[09-Oct-2024 09:23:16 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/config/database.php on line 18
+[24-Aug-2025 02:03:13 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/config/services.php on line 18
