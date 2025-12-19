@@ -125,32 +125,37 @@ function addSupplier(){
 	  }
 	});
     $.ajax({
-        type: 'POST',
-        url: site_url+'/suppliers',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(response){
-            if(!response.errorStatus){
-                $("#success-msg").css("display", "block");
-                $('#success-msg').text(response.successmessage);
-                reloadList('suppliers', 'supplierListTableDiv', 'supplierListTable');
-            }
-            else{
-                $("#error-msg").css("display", "block");
-                $('#error-msg').text('Please fill form properly');
-            }
-            setTimeout(function(){
-                $("#success-msg").css("display", "none");
-                $("#error-msg").css("display", "none");
-                editBulding(response.data.id);
-            }, 3000);
-            $('.process-loader-wrapper').hide();
-        },
-        error: function(response){
-            console.log(response);
+    url: BASE_URL + '/supplier/store',
+    type: 'POST',
+    data: new FormData(this),
+    contentType: false,
+    processData: false,
+    success: function (data) {
+        if(data.success){
+             $('.page-loader-wrapper').hide(); // Stop loader
+             // ... existing success logic ...
+             alert(data.success);
+             location.reload();
+        } else {
+             $('.page-loader-wrapper').hide(); // Stop loader on validation error
+             alert('Validation Error: ' + JSON.stringify(data.errors));
         }
-    });
+    },
+    error: function(xhr, status, error) {
+        $('.page-loader-wrapper').hide(); // STOP LOADER ON CRASH
+        
+        // Show the actual error message from the server
+        var errorMessage = xhr.status + ': ' + xhr.statusText;
+        if(xhr.responseText) {
+            // Try to extract the Laravel exception message
+            var response = JSON.parse(xhr.responseText);
+            if(response.message) {
+                errorMessage = response.message;
+            }
+        }
+        alert('Server Error: ' + errorMessage);
+    }
+});
 } 
 
 function updateSupplier(){

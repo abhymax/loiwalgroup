@@ -1,16 +1,17 @@
 <?php 
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; // This MUST be the first line
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth; // Make sure this is here
 use App\Models\Supplier;
 use App\Models\Warehouse;
+use App\Models\Product; // Use App\Models\Product, not just Product
 use Session;
 use Validator;
-use Product;
 use URL;
 
 class SupplierController extends Controller

@@ -1,0 +1,16 @@
+[16-Dec-2025 16:13:04 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Testing\TestCase" not found in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php on line 7
+[16-Dec-2025 16:13:08 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Testing\TestCase" not found in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php on line 7
+[16-Dec-2025 16:13:21 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Testing\TestCase" not found in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php on line 7
+[16-Dec-2025 16:13:32 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Testing\TestCase" not found in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/j7lo9g5r3sz/public_html/portal.loiwalgroup.com/tests/TestCase.php on line 7
